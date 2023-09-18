@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>IPTV</title>
+</head>
+<body>
+    <select id="group">
+        <option value="https://iptv.liuping.win/radio">Radio</option>
+        <option value="https://iptv.liuping.win/iptv">IPTV</option>
+    </select>
+    <select id="channel"></select>
+    <hr>
+    <video height="80%" id="video" controls></video>
+    
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/m3u8-parser/dist/m3u8-parser.js"></script>
+    <script>
+        initSelect = (url) => {
+            fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                const parser = new m3u8Parser.Parser();
+                parser.push(data);
+                parser.end();
+                const parsedManifest = parser.manifest;
+                console.log(parsedManifest);
+                let select = document.querySelector('select#channel');
+                select.innerHTML = '';
+                for(one of parsedManifest.segments) {
+                    title = one.title;
+                    titlePart = title.split(',')
+                    title = titlePart[titlePart.length - 1]
+                    url = one.uri;
+                    option = document.createElement('option');
+                    option.value = url;
+                    option.text = title;
+                    select.appendChild(option);
+                }
+                select.addEventListener('change', function() {
+                    let url = this.value;
+                    if(Hls.isSupported()) {
+                        var video = document.getElementById('video');
+                        var hls = new Hls();
+                        hls.xhrSetup = function(xhr, url) {
+                            xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+                        };
+                        hls.loadSource(url);
+                        hls.attachMedia(video);
+                        hls.on(Hls.Events.MANIFEST_PARSED,function() {
+                            video.play();
+                        });
+                    }
+                });
+            });
+        };
+
+        let group = document.querySelector('select#group');
+        group.addEventListener('change', function() {
+            var channel = document.querySelector('select#channel');
+            initSelect(this.value);
+        })
+        initSelect('https://iptv.liuping.win/radio');
+    </script>
+</body>
+</html>
