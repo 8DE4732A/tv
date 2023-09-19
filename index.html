@@ -9,8 +9,8 @@
 </head>
 <body>
     <select id="group">
-        <option value="https://iptv.liuping.win/radio">Radio</option>
-        <option value="https://iptv.liuping.win/iptv">IPTV</option>
+        <!-- <option value="https://iptv.liuping.win/radio">Radio</option> -->
+        <option value="https://iptv.liuping.win/iptv.m3u">IPTV</option>
     </select>
     <select id="channel"></select>
     <hr>
@@ -47,6 +47,8 @@
                         var hls = new Hls();
                         hls.xhrSetup = function(xhr, url) {
                             xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+                            xhr.setRequestHeader('User-Agent', 'AptvPlayer/1.1.4');
+
                         };
                         hls.loadSource(url);
                         hls.attachMedia(video);
@@ -63,7 +65,7 @@
             var channel = document.querySelector('select#channel');
             initSelect(this.value);
         })
-        initSelect('https://iptv.liuping.win/radio');
+        initSelect('https://iptv.liuping.win/iptv.m3u');
     </script>
 </body>
 </html>
